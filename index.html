@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP協定介紹</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul {
+            margin: 10px 0 20px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>HTTP協定介紹</h1>
+    
+    <h2>什麼是HTTP？</h2>
+    <p>HTTP（超文本傳輸協定，Hypertext Transfer Protocol）是用於在互聯網上傳輸數據的協定。它定義了客戶端（通常是瀏覽器）和伺服器之間的通信規則。</p>
+
+    <h2>HTTP的工作原理</h2>
+    <p>HTTP的工作過程主要包括以下幾個步驟：</p>
+    <ol>
+        <li>客戶端發送請求：客戶端通過URL向伺服器發送HTTP請求。</li>
+        <li>伺服器處理請求：伺服器接收到請求後，進行處理並準備響應。</li>
+        <li>伺服器發送響應：伺服器將數據（如HTML文件、圖像等）返回給客戶端。</li>
+        <li>客戶端顯示內容：客戶端接收響應後，將內容呈現給用戶。</li>
+    </ol>
+
+    <h2>HTTP請求和響應</h2>
+    <h3>請求</h3>
+    <p>HTTP請求由以下部分組成：</p>
+    <ul>
+        <li><strong>請求行：</strong>包含方法（如GET、POST）、URL和HTTP版本。</li>
+        <li><strong>請求頭：</strong>包含關於請求的附加信息（如用戶代理、內容類型等）。</li>
+        <li><strong>請求主體：</strong>在某些方法（如POST）中，包含發送的數據。</li>
+    </ul>
+
+    <h3>響應</h3>
+    <p>HTTP響應由以下部分組成：</p>
+    <ul>
+        <li><strong>狀態行：</strong>包含HTTP版本、狀態碼和狀態消息。</li>
+        <li><strong>響應頭：</strong>包含關於響應的附加信息（如內容類型、內容長度等）。</li>
+        <li><strong>響應主體：</strong>實際返回的數據（如HTML、JSON等）。</li>
+    </ul>
+
+    <h2>HTTP的版本</h2>
+    <p>HTTP有多個版本，其中最常用的包括：</p>
+    <ul>
+        <li><strong>HTTP/1.1：</strong>最常見的版本，支援持久連接和管道化請求。</li>
+        <li><strong>HTTP/2：</strong>改進了性能，支援多路複用和伺服器推送。</li>
+        <li><strong>HTTP/3：</strong>基於QUIC協定，進一步提升了傳輸效率和安全性。</li>
+    </ul>
+
+    <h2>總結</h2>
+    <p>HTTP協定是現代網絡通信的基礎，通過它，客戶端和伺服器可以有效地交換信息。隨著技術的發展，HTTP也在不斷演進，以滿足日益增長的需求。</p>
+
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>貪食蛇</title>
+
+<!-- 🐍 分頁圖示（favicon） -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+<defs>
+<linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+<stop offset='0%' stop-color='%238b5cf6'/>
+<stop offset='25%' stop-color='%2306b6d4'/>
+<stop offset='50%' stop-color='%2322c55e'/>
+<stop offset='75%' stop-color='%23facc15'/>
+<stop offset='100%' stop-color='%23ef4444'/>
+</linearGradient>
+</defs>
+<path d='M60 120 C40 80,70 40,110 60 C150 80,140 120,110 130 C80 140,60 160,80 170'
+stroke='url(%23g)' stroke-width='18' fill='none' stroke-linecap='round'/>
+<circle cx='100' cy='100' r='6' fill='%2338bdf8'/>
+</svg>">
+
+<style>
+body {
+    margin: 0;
+    background: radial-gradient(circle at top, #0f172a, #020617);
+    color: #fff;
+    font-family: Arial;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 卡片 */
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56,189,248,0.3);
+    border-radius: 16px;
+    padding: 30px;
+    width: 360px;
+    margin-top: 20px;
+    box-shadow: 0 0 25px rgba(56,189,248,0.2);
+}
+
+/* 遊戲畫布 */
+canvas {
+    background: #020617;
+    border: 3px solid #38bdf8;
+    box-shadow: 0 0 25px #38bdf8;
+    margin-top: 15px;
+}
+
+/* 按鈕 */
+button {
+    padding: 12px 20px;
+    margin: 10px;
+    background: linear-gradient(45deg, #38bdf8, #22c55e);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #000;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 18px rgba(56,189,248,0.5);
+}
+
+.screen { display: none; }
+
+#score {
+    font-size: 22px;
+    margin-top: 10px;
+    text-shadow: 0 0 10px #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- 🎮 動態炫彩 Logo -->
+<svg width="200" height="200" viewBox="0 0 200 200">
+
+<defs>
+<linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#8b5cf6">
+<animate attributeName="stop-color"
+values="#8b5cf6;#06b6d4;#22c55e;#facc15;#ef4444;#8b5cf6"
+dur="4s" repeatCount="indefinite"/>
+</stop>
+
+<stop offset="50%" stop-color="#06b6d4">
+<animate attributeName="stop-color"
+values="#06b6d4;#22c55e;#facc15;#ef4444;#8b5cf6;#06b6d4"
+dur="4s" repeatCount="indefinite"/>
+</stop>
+
+<stop offset="100%" stop-color="#22c55e">
+<animate attributeName="stop-color"
+values="#22c55e;#facc15;#ef4444;#8b5cf6;#06b6d4;#22c55e"
+dur="4s" repeatCount="indefinite"/>
+</stop>
+</linearGradient>
+
+<filter id="glow">
+<feGaussianBlur stdDeviation="4" result="blur"/>
+<feMerge>
+<feMergeNode in="blur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+
+</defs>
+
+<!-- 外圈 -->
+<circle cx="100" cy="100" r="85"
+stroke="#38bdf8" stroke-width="2" fill="none" opacity="0.4"/>
+
+<!-- 蛇 -->
+<path d="M60 120 C40 80,70 40,110 60 C150 80,140 120,110 130 C80 140,60 160,80 170"
+stroke="url(#flowGradient)" stroke-width="16" fill="none"
+stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+
+<animate attributeName="stroke-width"
+values="14;17;14"
+dur="2.5s" repeatCount="indefinite"/>
+</path>
+
+<!-- 蛇頭 -->
+<circle cx="80" cy="170" r="7" fill="#111827"/>
+
+<!-- 眼睛 -->
+<circle cx="82" cy="168" r="2.5" fill="#ef4444"/>
+
+<!-- 核心 -->
+<circle cx="100" cy="100" r="5" fill="#38bdf8"/>
+
+</svg>
+
+<!-- 主畫面 -->
+<div id="startScreen" class="screen card">
+<h1>貪食蛇 🐍</h1>
+<button onclick="startGame()">開始遊戲</button>
+<button onclick="showLeaderboard()">排行榜</button>
+</div>
+
+<!-- 遊戲 -->
+<div id="gameScreen" class="screen">
+<div id="score">分數: 0</div>
+<canvas id="gameCanvas" width="600" height="600"></canvas><br>
+<button onclick="goHome()">返回主畫面</button>
+</div>
+
+<!-- 結束 -->
+<div id="gameOverScreen" class="screen card">
+<h1>遊戲結束 💀</h1>
+<p id="finalScore"></p>
+<button onclick="startGame()">再玩一次</button>
+<button onclick="showLeaderboard()">查看排行榜</button>
+<button onclick="goHome()">返回主畫面</button>
+</div>
+
+<!-- 排行榜 -->
+<div id="leaderboardScreen" class="screen card">
+<h1>🏆 排行榜</h1>
+<div id="leaderboard"></div>
+<button onclick="goHome()">返回主畫面</button>
+</div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const grid = 20;
+let snake, food, dx, dy, score, gameInterval;
+
+// 畫面控制
+function showScreen(id){
+document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
+}
+
+// 排行榜
+function getLeaderboard(){
+return JSON.parse(localStorage.getItem("snake_scores")) || [];
+}
+
+function saveScore(score){
+let s = getLeaderboard();
+s.push(score);
+s.sort((a,b)=>b-a);
+s = s.slice(0,5);
+localStorage.setItem("snake_scores", JSON.stringify(s));
+}
+
+function renderLeaderboard(){
+const board = getLeaderboard();
+document.getElementById("leaderboard").innerHTML =
+board.length ? board.map((v,i)=>`${i+1}. ${v}`).join("<br>") : "還沒有紀錄";
+}
+
+function showLeaderboard(){
+renderLeaderboard();
+showScreen("leaderboardScreen");
+}
+
+// 遊戲
+function startGame(){
+showScreen("gameScreen");
+
+snake = [{x:200,y:200}];
+food = randomFood();
+dx = grid;
+dy = 0;
+score = 0;
+
+updateScore();
+
+clearInterval(gameInterval);
+gameInterval = setInterval(loop,90);
+}
+
+function randomFood(){
+return {
+x: Math.floor(Math.random()*30)*grid,
+y: Math.floor(Math.random()*30)*grid
+};
+}
+
+function loop(){
+update();
+draw();
+}
+
+function update(){
+let head = {x:snake[0].x+dx, y:snake[0].y+dy};
+
+if(head.x<0) head.x=canvas.width-grid;
+if(head.x>=canvas.width) head.x=0;
+if(head.y<0) head.y=canvas.height-grid;
+if(head.y>=canvas.height) head.y=0;
+
+if(snake.some(s=>s.x===head.x&&s.y===head.y)){
+gameOver();
+return;
+}
+
+snake.unshift(head);
+
+if(head.x===food.x && head.y===food.y){
+score++;
+updateScore();
+food=randomFood();
+}else{
+snake.pop();
+}
+}
+
+function draw(){
+ctx.fillStyle="#020617";
+ctx.fillRect(0,0,600,600);
+
+ctx.fillStyle="#ef4444";
+ctx.fillRect(food.x,food.y,grid,grid);
+
+ctx.fillStyle="#22c55e";
+snake.forEach(s=>ctx.fillRect(s.x,s.y,grid,grid));
+}
+
+function updateScore(){
+document.getElementById("score").innerText="分數: "+score;
+}
+
+function gameOver(){
+clearInterval(gameInterval);
+saveScore(score);
+document.getElementById("finalScore").innerText="最終分數: "+score;
+showScreen("gameOverScreen");
+}
+
+function goHome(){
+clearInterval(gameInterval);
+showScreen("startScreen");
+}
+
+document.addEventListener("keydown",e=>{
+if(e.key==="ArrowUp"&&dy===0){dx=0;dy=-grid;}
+else if(e.key==="ArrowDown"&&dy===0){dx=0;dy=grid;}
+else if(e.key==="ArrowLeft"&&dx===0){dx=-grid;dy=0;}
+else if(e.key==="ArrowRight"&&dx===0){dx=grid;dy=0;}
+});
+
+showScreen("startScreen");
+</script>
+
+</body>
+</html>
